@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Verificar Localização</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Verificar Localização</h1>
+  <button id="btnObterLocalizacao">Obter Localização</button>
+  <div id="coordenadas"></div>
+  <div id="localizacoes"></div>
+  <form action="{{ url_for('enviar_mensagem') }}" method="post">
+    <input type="text" name="mensagem" placeholder="Digite sua mensagem" required>
+    <button type="submit">Enviar Mensagem</button>
+  </form>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
