@@ -42,7 +42,7 @@ function verificarProximidade(latitude, longitude) {
 
   listaLocalizacoes.forEach(localizacao => {
     const distancia = calcularDistancia(latitude, longitude, localizacao.latitude, localizacao.longitude);
-    if (distancia > 0.1) { // 100 metros (0.1 km)
+    if (distancia < 0.1) { // 100 metros (0.1 km)
       localizacoesProximas.push({ name: localizacao.name, distancia: distancia.toFixed(2) });
     }
   });
@@ -50,11 +50,12 @@ function verificarProximidade(latitude, longitude) {
   if (localizacoesProximas.length > 0) {
     let localizacoesHTML = "";
     localizacoesProximas.forEach(localizacao => {
-      localizacoesHTML += `<p>Você está a ${localizacao.distancia} km de ${localizacao.name}</p>`;
+      localizacoesHTML += `<p>Sua localização atual é:  ${localizacao.name}\n</p>`;
     });
     document.getElementById("localizacoes").innerHTML = localizacoesHTML;
     enviarDistanciaTelegram(localizacoesProximas);
-  } else {
+  } 
+  else {
     document.getElementById("localizacoes").textContent = "Você não está próximo de nenhuma localização.";
   }
 }
@@ -88,7 +89,7 @@ function obterDistancia(latitude1, longitude1) {
 
   listaLocalizacoes.forEach(localizacao => {
     const distancia = calcularDistancia(latitude1, longitude1, localizacao.latitude, localizacao.longitude);
-    mensagem += `Você está a ${distancia.toFixed(2)} km de ${localizacao.name}\n`;
+    mensagem += `Sua localização atual é:  ${localizacao.name}\n`;
   });
 
   return mensagem;
@@ -109,7 +110,7 @@ function obterLocalizacao() {
   }
 }
 
-//setInterval(obterLocalizacao, 5000); // Chama a função a cada 5 segundos
+setInterval(obterLocalizacao, 5000); // Chama a função a cada 5 segundos
 
 const btnObterLocalizacao = document.getElementById("btnObterLocalizacao");
 btnObterLocalizacao.addEventListener("click", obterLocalizacao);
