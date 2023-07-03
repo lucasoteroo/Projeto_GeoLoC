@@ -1,6 +1,8 @@
 import requests
 from flask import Flask, request, render_template
 import telebot
+import json
+
 
 # Token de acesso do bot do Telegram
 token = '6148425947:AAFjBOwCHGFjc_pvR_Bjz1nCLwZ_euyyPgA'
@@ -34,18 +36,24 @@ def webhook():
 def comando_start(message):
     chat_id = message.chat.id
     print(chat_id)
-    bot.send_message(chat_id, 'Olá! Digite o comando /distancia para obter a distância.')
+    bot.send_message(chat_id, 'Olá! Digite o comando /enviar_distancia para obter a distância.')
 
 @app.route('/enviar_distancia', methods=['POST'])
 def enviar_distancia():
-    distancia = request.json['distancia']
+    localizacoes = request.json['localizacoes']
     chat_id = request.json['chat_id']  # Obtém o chat ID do JSON recebido
-    mensagem = f'A distância é: {distancia} km'
+
+    mensagem = "Distâncias:\n"
+    for localizacao in localizacoes:
+        distancia = localizacao['distancia']
+        nome = localizacao['name']
+        mensagem += f"Você está a {distancia} km de {nome}\n"
 
     # Envie a mensagem para o bot do Telegram usando a API do Telegram
     bot.send_message(chat_id, mensagem)
 
     return "OK"
+
 
 def set_telegram_webhook(url):
     webhook_url = f'https://api.telegram.org/bot{token}/setWebhook?url={url}/webhook'
@@ -57,7 +65,7 @@ def set_telegram_webhook(url):
 
 if __name__ == '__main__':
     # Define a URL do webhook para receber as atualizações do bot do Telegram
-    ngrok_url = 'https://4238-187-19-253-192.ngrok-free.app'  # Substitua pela URL do ngrok
+    ngrok_url = 'https://9f42-179-127-33-48.ngrok-free.app'  # Substitua pela URL do ngrok
     set_telegram_webhook(ngrok_url)
 
     # Inicia o servidor web Flask
