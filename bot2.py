@@ -47,7 +47,7 @@ def enviar_distancia():
     for localizacao in localizacoes:
         distancia = localizacao['distancia']
         nome = localizacao['name']
-        mensagem += f"Você está a {distancia} km de {nome}\n"
+        mensagem += f"Sua localizão atual é: {nome}\n"
 
     # Envie a mensagem para o bot do Telegram usando a API do Telegram
     bot.send_message(chat_id, mensagem)
@@ -65,7 +65,7 @@ def set_telegram_webhook(url):
 
 if __name__ == '__main__':
     # Define a URL do webhook para receber as atualizações do bot do Telegram
-    ngrok_url = 'https://9f42-179-127-33-48.ngrok-free.app'  # Substitua pela URL do ngrok
+    ngrok_url = 'https://05bd-179-127-33-48.ngrok-free.app'  # Substitua pela URL do ngrok
     set_telegram_webhook(ngrok_url)
 
     # Inicia o servidor web Flask
