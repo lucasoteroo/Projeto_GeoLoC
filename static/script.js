@@ -61,9 +61,8 @@ function verificarProximidade(latitude, longitude) {
 
 function enviarDistanciaTelegram(localizacoes) {
   const url = '/enviar_distancia';
-  const distancia = obterDistancia(); // Chame a função que retorna a distância desejada
   const chatId = 1110850646; // Substitua pelo valor do chat_id correto
-  const data = { distancia: distancia, chat_id: chatId };
+  const data = { localizacoes: localizacoes, chat_id: chatId };
 
   fetch(url, {
     method: 'POST',
@@ -84,16 +83,12 @@ function enviarDistanciaTelegram(localizacoes) {
     });
 }
 
-function obterDistancia() {
-  // Implemente a lógica para obter a distância desejada e retorne o valor aqui
-  const latitude1 = -8.284254; // Latitude da sua localização
-  const longitude1 = -35.991428; // Longitude da sua localização
-
-  let mensagem = `Sua localização: Latitude ${latitude1.toFixed(6)}, Longitude ${longitude1.toFixed(6)}<br><br>`;
+function obterDistancia(latitude1, longitude1) {
+  let mensagem = `Sua localização: Latitude ${latitude1.toFixed(6)}, Longitude ${longitude1.toFixed(6)}\n\n`;
 
   listaLocalizacoes.forEach(localizacao => {
     const distancia = calcularDistancia(latitude1, longitude1, localizacao.latitude, localizacao.longitude);
-    mensagem += `Você está a ${distancia.toFixed(2)} km de ${localizacao.name}<br>`;
+    mensagem += `Você está a ${distancia.toFixed(2)} km de ${localizacao.name}\n`;
   });
 
   return mensagem;
@@ -114,7 +109,7 @@ function obterLocalizacao() {
   }
 }
 
-setInterval(obterLocalizacao, 5000); // Chama a função a cada 5 segundos
+//setInterval(obterLocalizacao, 5000); // Chama a função a cada 5 segundos
 
 const btnObterLocalizacao = document.getElementById("btnObterLocalizacao");
 btnObterLocalizacao.addEventListener("click", obterLocalizacao);
