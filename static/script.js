@@ -1,3 +1,6 @@
+// Variável para armazenar a mensagem anterior enviada ao Telegram
+let mensagemAnterior = null;
+
 // Lista de localizações
 const listaLocalizacoes = [
   {'name': 'Fórum', 'latitude': -8.337102229888044, 'longitude': -36.418989475786226},
@@ -16,10 +19,10 @@ const listaLocalizacoes = [
   {'name': 'Erem João Monteiro', 'latitude': -8.339019961440135, 'longitude': -36.43257982213477},
   {'name': 'Câmara municipal', 'latitude': -8.332738694916673, 'longitude': -36.41868088328961},
   {'name': 'Posto Petrovia', 'latitude': -8.337249932009748, 'longitude': -36.4303272889118},
-  {'name': 'Trevo de acesso', 'latitude': -8.345068172150173, 'longitude': -36.43325160699831},
-  {'name': 'Casa', 'latitude': -8.338991, 'longitude': -36.419332}
+  {'name': 'Trevo de acesso', 'latitude': -8.345068172150173, 'longitude': -36.43325160699831}
 ];
 
+// Calculo da distancia
 function calcularDistancia(latitude1, longitude1, latitude2, longitude2) {
   const raioTerra = 6371; // Raio médio da Terra em quilômetros
   const dLat = toRadians(latitude2 - latitude1);
@@ -37,6 +40,7 @@ function toRadians(graus) {
   return graus * (Math.PI / 180);
 }
 
+// Calculo do raio de tolerancia
 function verificarProximidade(latitude, longitude) {
   const localizacoesProximas = [];
 
@@ -45,43 +49,53 @@ function verificarProximidade(latitude, longitude) {
     if (distancia < 0.1) { // 100 metros (0.1 km)
       localizacoesProximas.push({ name: localizacao.name, distancia: distancia.toFixed(2) });
     }
+    
   });
 
   if (localizacoesProximas.length > 0) {
     let localizacoesHTML = "";
     localizacoesProximas.forEach(localizacao => {
-      localizacoesHTML += `<p>Sua localização atual é:  ${localizacao.name}\n</p>`;
+      localizacoesHTML += `<p>Você está a ${localizacao.distancia} km de ${localizacao.name}\n</p>`;
     });
     document.getElementById("localizacoes").innerHTML = localizacoesHTML;
     enviarDistanciaTelegram(localizacoesProximas);
   } 
   else {
     document.getElementById("localizacoes").textContent = "Você não está próximo de nenhuma localização.";
+    enviarDistanciaTelegram(localizacoesProximas);
   }
 }
-
-function enviarDistanciaTelegram(localizacoes) {
+ // Enviar mensagem para o telegram
+ function enviarDistanciaTelegram(localizacoes) {
   const url = '/enviar_distancia';
-  const chatId = 1110850646; // Substitua pelo valor do chat_id correto
+  const chatId = -1001740152545; 
   const data = { localizacoes: localizacoes, chat_id: chatId };
+  const mensagemAtual = JSON.stringify(localizacoes);
 
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-    .then(response => {
-      if (response.ok) {
-        console.log('Distância enviada com sucesso');
-      } else {
-        console.log('Erro ao enviar a distância');
-      }
+  // Verifica se a mensagem atual é diferente da anterior antes de enviar
+  if (mensagemAtual !== mensagemAnterior) {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
     })
-    .catch(error => {
-      console.error('Erro ao enviar a distância:', error);
-    });
+      .then(response => {
+        if (response.ok) {
+          console.log('Distância enviada com sucesso');
+          // Atualiza a mensagem anterior com a mensagem atual após o envio bem-sucedido
+          mensagemAnterior = mensagemAtual;
+        } else {
+          console.log('Erro ao enviar a distância');
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao enviar a distância:', error);
+      });
+  } else {
+    console.log('Mensagem repetida. Não será enviada novamente.');
+  }
 }
 
 function obterDistancia(latitude1, longitude1) {
@@ -89,12 +103,13 @@ function obterDistancia(latitude1, longitude1) {
 
   listaLocalizacoes.forEach(localizacao => {
     const distancia = calcularDistancia(latitude1, longitude1, localizacao.latitude, localizacao.longitude);
-    mensagem += `Sua localização atual é:  ${localizacao.name}\n`;
+    mensagem += `Você está a ${localizacao.distancia} km de ${localizacao.name}\n`;
   });
 
   return mensagem;
 }
 
+// Obter distancia do dispositivo
 function obterLocalizacao() {
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(position => {
