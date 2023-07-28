@@ -16,7 +16,7 @@ def index():
 @app.route('/enviar_mensagem', methods=['POST'])
 def enviar_mensagem():
     token = "6103231923:AAH1sxXKyQMZrwbrjT9VsL5coUK7OD24qT4"
-    chat_id = "1298484597"
+    chat_id = "-1001740152545"
     mensagem = request.form.get('mensagem')
     enviar_mensagem_telegram(token, chat_id, mensagem)
     print(mensagem)
